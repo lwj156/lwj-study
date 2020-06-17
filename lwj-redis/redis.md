@@ -2,7 +2,7 @@
 
 redis全称：REmote DIctionary Service   译为远程字典服务
 
-![image-20200610095302423](redis.assets/image-20200610095302423.png)
+<img src="https://raw.githubusercontent.com/lwj156/lwj-study/release/image/dict.png" width = "600" />
 
 ## 基本数据结构
 
