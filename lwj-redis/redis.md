@@ -2,13 +2,21 @@
 
 redis全称：REmote DIctionary Service   译为远程字典服务
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/release/image/dict.png"/>
+每个KV键值对都存储在dictEntry(dict.h)里面，
+
+<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200617173236796.png">
+
+<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200610095302423.png">
 
 ## 基本数据结构
 
 ### String
 
-### hash：value只能是字符串类型
+#### **基本介绍**：
+
+### hash
+
+value只能是字符串类型
 
 #### 基本介绍
 
@@ -16,11 +24,11 @@ redis全称：REmote DIctionary Service   译为远程字典服务
 2. 缺点：field无法单独设置过期时间、无bit操作、数据量分布问题（都分布在key所在节点）
 3. 基本操作指令：hset、hmset、hscan
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/release/image/image-20200609133918596.png" alt="image-20200609133918596" style="zoom:80%;" />
+<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609133918596.png">
 
 #### 实现原理（底层由两种数据结构组成）
 
-1. ziplist（压缩列表）：<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/zlen.png"/>
+1. ziplist（压缩列表）：<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609152857683-1592384461125.png">
 
    通过当前节点的长度和上一个节点的长度计算出上一个节点的地址
 
@@ -30,7 +38,7 @@ redis全称：REmote DIctionary Service   译为远程字典服务
 
    当超过这两个阈值的时候转换为hashtable（哈希表）
 
-2. hashtable（哈希表）：![image-20200609155406544](https://raw.githubusercontent.com/lwj156/lwj-study/release/image/image-20200609155406544.png)
+2. hashtable（哈希表）：<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609155406544.png">
 
    根据负载因子（dict_force_resize_ratio=5），若大于，则触发rehash，扩容大小为当前库大小*2
 
@@ -40,11 +48,11 @@ redis全称：REmote DIctionary Service   译为远程字典服务
 
 3.2版本之后采用quicklist来存储
 
-![image-20200609183912407](https://raw.githubusercontent.com/lwj156/lwj-study/release/image/image-20200609183912407.png)
+<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609183912407.png">
 
-![image-20200609183927880](https://raw.githubusercontent.com/lwj156/lwj-study/release/image/image-20200609183927880.png)
 
-![image-20200609184016745](redis.assets/image-20200609184016745.png)
+
+<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609183927880.png">
 
 #### 应用场景：由于list是有序排列，因此可以作为时间线
 
@@ -118,7 +126,9 @@ LFU，Least Frequently Used，最不常用，根据使用频率计算，4.0 版�
 
    **传统LRU算法内部原理**：通过链表维护缓存，最新缓存放在头部。如果缓存被访问，则迁移到链表头部。淘汰数据从尾部开始淘汰即可。淘汰对象追加到AOF文件当中
 
-   ![image-20200611113633207](https://raw.githubusercontent.com/lwj156/lwj-study/release/image/image-20200611113633207.png)
+   
+
+   <img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200611113633207.png">
 
    redis volatile-lru/volatile-lfu/volatile-ttl/allkeys-lru/allkeys-lfu淘汰策略原理：获取样本根据排序权值idel进行排序，从最后的元素开始淘汰，相比LRU链表成本低。
 
@@ -130,17 +140,17 @@ LFU，Least Frequently Used，最不常用，根据使用频率计算，4.0 版�
 
    - 热度判断：redisObject维护了value的热度值，server.lruclock是定时任务更新的unix时间戳（源码：server.c）单位秒，24位只能存储194天，超过则从头计算
 
-     ![image-20200611143327400](https://raw.githubusercontent.com/lwj156/lwj-study/release/image/image-20200611143327400.png)
-
-   ![image-20200611141102255](https://raw.githubusercontent.com/lwj156/lwj-study/release/image/image-20200611141102255.png)
-
-   ---
-
    
 
-   **redis-lfu淘汰方式**：server.lruclock高16位存储时间（分钟），低8位用于存储频次（读写时更新）
+<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200611143327400.png">
 
-   根据衰减因子 lfu-decay-time（分钟），频次会根据时间减少
+---
+
+<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200611141102255.png">
+
+**redis-lfu淘汰方式**：server.lruclock高16位存储时间（分钟），低8位用于存储频次（读写时更新）
+
+根据衰减因子 lfu-decay-time（分钟），频次会根据时间减少
 
    **Random**：随机删除
 
