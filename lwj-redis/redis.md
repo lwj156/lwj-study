@@ -8,15 +8,15 @@ redis全称：REmote DIctionary Service   译为远程字典服务
 
 每个KV键值对都存储在dictEntry(dict.h)里面，redis底层是哈希表（hashTable），结构体现在dictEntry是数组，*next指针维护链表。
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200617173236796.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200617173236796.png">
 
 key是字符串结构，redis采用sds结构（sds.h）存储，由于底层是C语言编写，C语言没有String结构。
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618140613382.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618140613382.png">
 
 **sds与char[]的区别**：
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618141005606.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618141005606.png">
 
 1. sds长度存储在len属性当中，无需再计算
 2. 内存分配不足导致溢出，sds会提前检查空间剩余量并进行分配
@@ -25,7 +25,7 @@ key是字符串结构，redis采用sds结构（sds.h）存储，由于底层是C
 
 value存储在redisObject当中（server.h）
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618134749915.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618134749915.png">
 
 对象类型可以根据命令：type key查看
 
@@ -63,7 +63,7 @@ value只能是字符串类型
 2. 缺点：field无法单独设置过期时间、无bit操作、数据量分布问题（都分布在key所在节点）
 3. 基本操作指令：hset、hmset、hscan
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609133918596.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200609133918596.png">
 
 **实现原理：（底层由两种数据结构组成）**
 
@@ -71,9 +71,9 @@ hash的底层由两种结构组成：ziplist和hashtable
 
 1. ziplist压缩列表（ziplist.c）：
 
-   <img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618174939538.png">
+   <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618174939538.png">
 
-   <img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618175323429.png">
+   <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618175323429.png">
 
    通过当前节点的长度和上一个节点的长度计算出上一个节点的地址
 
@@ -85,15 +85,15 @@ hash的底层由两种结构组成：ziplist和hashtable
 
    **编码格式**：根据字节区分
 
-   <img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618175446701.png">
+   <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618175446701.png">
 
 2. hashtable哈希表（dict.h）：redis底层哈希表可参照此结构
 
-   <img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609155406544.png">
+   <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200609155406544.png">
 
-   <img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618175859237.png">
+   <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618175859237.png">
 
-   <img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618180044562.png">
+   <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618180044562.png">
 
    根据负载因子就是链表的长度（dict_force_resize_ratio=5），若大于，则触发rehash，扩容大小为当前库大小*2
 
@@ -116,13 +116,13 @@ hash的底层由两种结构组成：ziplist和hashtable
 
 3.2版本之后采用quicklist来存储
 
-![image-20200618190010964](redis.assets/image-20200618190010964.png)
+![image-20200618190010964](https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618190010964.png)
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609183912407.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200609183912407.png">
 
 
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200609183927880.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200609183927880.png">
 
 **应用场景**：
 
@@ -150,9 +150,9 @@ hash的底层由两种结构组成：ziplist和hashtable
 
 **实现原理**：源码结构（server.h）
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618191330929.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618191330929.png">
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200618190932407.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200618190932407.png">
 
 1. 元素数量小于128，长度小于64字节用ziplist
 2. 超过阈值后，用skiplist+dict存储（跳跃表）:跳跃表就是维护了多层数据，根据当前层判断是否需要到下层查找
@@ -240,7 +240,7 @@ LFU，Least Frequently Used，最不常用，根据使用频率计算，4.0 版�
 
    
 
-   <img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200611113633207.png">
+   <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200611113633207.png">
 
    redis volatile-lru/volatile-lfu/volatile-ttl/allkeys-lru/allkeys-lfu淘汰策略原理：获取样本根据排序权值idel进行排序，从最后的元素开始淘汰，相比LRU链表成本低。
 
@@ -254,11 +254,11 @@ LFU，Least Frequently Used，最不常用，根据使用频率计算，4.0 版�
 
    
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200611143327400.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200611143327400.png">
 
 ---
 
-<img src="https://raw.githubusercontent.com/lwj156/lwj-study/master/image/redis/image-20200611141102255.png">
+<img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200611141102255.png">
 
 **redis-lfu淘汰方式**：server.lruclock高16位存储时间（分钟），低8位用于存储频次（读写时更新）
 
