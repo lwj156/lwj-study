@@ -104,4 +104,4 @@ spring bean各作用域之间的区别
 
 ### springbean的作用域
 
-单例、多例、request、session
+单例、多例、request、session、
