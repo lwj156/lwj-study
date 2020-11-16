@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b65fb1e5-ac80-42d0-b6f5-182012a85dbe" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/mybatis/spring/SqlSessionUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/mybatis/spring/SqlSessionUtils.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1e1EMwLVxtWdzGd05znBsOw9bhE" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.general" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b65fb1e5-ac80-42d0-b6f5-182012a85dbe" name="Default Changelist" comment="" />
+      <created>1593480654277</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1593480654277</updated>
+      <workItem from="1593480659241" duration="4014000" />
+      <workItem from="1593604385423" duration="54000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="221" y="60" key="SettingsEditor" timestamp="1593604431997">
+      <screen x="0" y="23" width="1440" height="801" />
+    </state>
+    <state x="221" y="60" key="SettingsEditor/0.23.1440.801@0.23.1440.801" timestamp="1593604431997" />
+    <state x="385" y="148" width="670" height="676" key="search.everywhere.popup" timestamp="1593482295765">
+      <screen x="0" y="23" width="1440" height="801" />
+    </state>
+    <state x="385" y="148" width="670" height="676" key="search.everywhere.popup/0.23.1440.801@0.23.1440.801" timestamp="1593482295765" />
+  </component>
+</project>
