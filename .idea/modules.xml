@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/lwj-study.iml" filepath="$PROJECT_DIR$/.idea/lwj-study.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lwj-mybatis/mybatis-3-mybatis-3.5.5/mybatis.iml" filepath="$PROJECT_DIR$/lwj-mybatis/mybatis-3-mybatis-3.5.5/mybatis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lwj-mybatis/spring-mybatis/mybatis-spring.iml" filepath="$PROJECT_DIR$/lwj-mybatis/spring-mybatis/mybatis-spring.iml" />
     </modules>
   </component>
 </project>
