@@ -312,4 +312,4 @@ redis的两种持久化方案：RDB（Redis DataBase）快照、AOF（Append Onl
 
 ## Redis集群
 
-保证redis的性能、扩展以及可用性
+保证redis的性能、扩展以及可用性。
