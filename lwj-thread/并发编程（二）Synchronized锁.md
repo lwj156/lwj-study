@@ -1,47 +1,46 @@
 # 并发编程（二）Synchronized锁
 
-## 线程安全性
-
-1. 共享资源是否有多个线程同时访问
-2. 希望结果跟预期的一致
-
 
 
 ## 基本使用
 
-<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201119190928500.png" alt="image-20201119190928500" style="zoom:50%;" />
+<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201119190928500.png" alt="image-20201119190928500" style="zoom: 33%;" />
 
 1. 修饰实例方法：锁的对象为当前实例 syn void
 2. 修饰静态方法：锁的对象为这个类 syn static void
 3. 修饰代码块：看锁对象还是实例 syn(a.class)、syn(this)
 
-**注**：不能用String常量、Integer、Long类型
+**注**：不能用String常量、Integer、Long类型：因为Java自动封箱和解箱操作的原因
 
 
 
 ## 存储方式
 
-<img src="Synchronized%E9%94%81.assets/image-20201119191910764.png" alt="image-20201119191910764" style="zoom:50%;" />
+**对象头加锁前后变化**：
 
-![image-20201119192000848](Synchronized%E9%94%81.assets/image-20201119192000848.png)
+<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201203192833465.png" alt="image-20201203192833465" style="zoom: 25%;" />
 
-<img src="%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89Synchronized%E9%94%81.assets/image-20201203193114155.png" alt="image-20201203193114155" style="zoom:50%;" />
+**参考工具**：Java Object Layout
 
-存储在对象的对象头当中：对应源码（markOop.hpp当中）
+![img](https://gitee.com/lwj156/picture/raw/master/image/thread/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NjgyNjY1,size_16,color_FFFFFF,t_70-20210227170313180.png)
+
+可以看出锁信息存储在对象的`对象头`当中：对应源码（markOop.hpp当中）
+
+![img](https://gitee.com/lwj156/picture/raw/master/image/thread/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NjgyNjY1,size_16,color_FFFFFF,t_70-20210227170443541.png)
 
 **对象头（marword）**：8字节对象头+4字节的指向指针（属于哪个类）
 
 对象填充：`8`的倍数，缺少则填充
 
-![image-20201203192833465](%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89Synchronized%E9%94%81.assets/image-20201203192833465.png)
+**不同类型的锁在对象头中存储的结构如下：**
 
-**参考工具**：Java Object Layout
+<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201203193114155.png" alt="image-20201203193114155" style="zoom:50%;" />
 
 
 
 ## 锁升级的过程
 
-> 1.6之前，基于重量级锁来实现
+> Jdk1.6之前，基于重量级锁来实现
 
 **无锁->偏向锁->轻量级锁->重量级锁**
 
@@ -49,7 +48,7 @@
 
 ### 偏向锁
 
-<img src="Synchronized%E9%94%81.assets/image-20201119232307183.png" alt="image-20201119232307183" style="zoom:50%;" />
+<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201119232307183.png" alt="image-20201119232307183" style="zoom: 33%;" />
 
 > 存在的意义：大多数情况下不存在锁竞争，都是由同一个线程多次获取
 
@@ -59,37 +58,48 @@
 
 **注**：线程1执行完毕后,不会主动去释放偏向锁。线程2竞争时，先判断偏向锁标记为1，然后在判断持有的线程1是否还存活，不存活，cas替换，存活则暂停升级。
 
-**偏向锁延迟打开的作用**：JVM启动过程中会去对对象处理，这个时候会存在锁竞争问题，因此让偏向锁延迟打开。-XX:BiasedLockingStartupDelay默认4秒
+**`偏向锁延迟`打开的作用**：JVM启动过程中会去对对象处理，这个时候会存在锁竞争问题，因此让偏向锁延迟打开。-XX:BiasedLockingStartupDelay默认4秒
 
-偏向锁若`启用`，则创建的对象为匿名偏向锁对象101，此时记录的线程id为空
+偏向锁若`启用`，则创建的对象为匿名偏向锁对象1|01，此时记录的线程id为空
 
 
 
 ### 轻量级锁
 
-<img src="Synchronized%E9%94%81.assets/image-20201119232325852.png" alt="image-20201119232325852" style="zoom:50%;" />
-
-![image-20201119232657942](Synchronized%E9%94%81.assets/image-20201119232657942.png)
+<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201119232325852.png" alt="image-20201119232325852" style="zoom: 33%;" />
 
 偏向锁撤销后升级为轻量级锁，通过cas自旋获取锁
 
 > 自旋的意义：绝大部分线程在获取线程后，在非常短的时间内会释放
 
-设置自旋次数：preBlockSpin，默认10次
+**设置自旋次数**：preBlockSpin，默认10次
 
-自适应自旋：由JVM来控制
+jdk1.6后引入`自适应自旋`：由JVM来控制（根据最近成功率调整自旋次数）
+
+<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201119232657942.png" alt="image-20201119232657942" style="zoom:33%;" />
+
+> **轻量级锁加锁过程**：
+>
+> 1. 线程栈桢创建`LockRecord`并复制MarkWord中的锁记录
+> 2. 将LockRecord中的Owner指针指向锁对象
+> 3. 将锁对象的MarkWord替换为指向LockRecord的指针
 
 
 
 ### 重量级锁（Mutex）
 
-<img src="Synchronized%E9%94%81.assets/image-20201122174651665.png" alt="image-20201122174651665" style="zoom:50%;" />
+<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201122174651665.png" alt="image-20201122174651665" style="zoom: 33%;" />
 
 基于对象监视器实现。
 
 同步队列：objectMonotor.hpp中的`waitSet`队列
 
 **偏向锁直接升级成重量级锁**：当获取偏向锁的对象调用了wait方法的时候会直接升级为重量级锁
+
+**加锁过程**：
+
+1. monitor依赖操作系统的`MutexLock(互斥锁)`来实现的，线程被阻塞后便进入内核（Linux）调度状态，这个会导致系统在`用户态与内核态`之间来回切换，严重影响锁的性能
+2. 任意线程对Object的访问，首先要获取对象的monitor，获取失败加入同步队列，线程状态变为BLOCK，访问Object的前驱释放锁，唤醒队列中的线程重新尝试获得锁
 
 
 
@@ -99,19 +109,19 @@
 
 重量级锁->ObjectMonitor当中
 
-### 锁粗化
-
-方法内部的锁只会被自己线程所用，不可能被其他线程引用，则自动消除对象内部锁。
-
 ### 锁消除
 
-JVM检测多次操作对同一个对象加锁（如while操作），则会讲锁范围加粗到方法体外，是这一串操作只进行一次加锁。
+方法内部的锁只会被自己线程所用（如StringBuffer类的append操作），不可能被其他线程引用，则自动消除对象内部锁。
+
+### 锁粗化
+
+JVM检测多次操作对同一个对象加锁（如while操作），则会将锁范围加粗到方法体外，是这一串操作只进行一次加锁。
 
 
 
 ### wait、notify、notifyall
 
-<img src="Synchronized%E9%94%81.assets/image-20201122175826293.png" alt="image-20201122175826293" style="zoom:50%;" />
+<img src="https://gitee.com/lwj156/picture/raw/master/image/thread/image-20201122175826293.png" alt="image-20201122175826293" style="zoom:50%;" />
 
 > 线程通信机制
 
