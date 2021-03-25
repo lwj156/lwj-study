@@ -8,6 +8,8 @@ redis全称：REmote DIctionary Service   译为远程字典服务
 
 每个KV键值对都存储在dictEntry(dict.h)里面，redis底层是哈希表（hashTable），结构体现在dictEntry是数组，*next指针维护链表。
 
+![image-20210318100728918](redis%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.assets/image-20210318100728918.png)
+
 <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200617173236796.png">
 
 key是字符串结构，redis采用sds结构（sds.h）存储，由于底层是C语言编写，C语言使用的字符串格式无法满足redis对于字符串的要求。
@@ -39,19 +41,37 @@ value存储在redisObject当中（server.h）
 
 可通过命令object encoding key查询编码
 
-1. int：（8字节  64位）
-2. embstr：sds的一种格式，存储小于44字节的字符串 ，redisObject和sds连续分配，修改时需要重新全部分配，因此设置为只读
+1. int：存储长整型（8字节  64位）
+2. embstr：sds的一种格式，存储小于`44字节`的字符串 ，redisObject和sds连续分配，修改时需要重新全部分配，因此设置为只读
 3. raw：存储大于44字节的字符串，redisObject和sds分别分配。
 
-embstr以及raw的临界值可通过配置#define OBJ_ENCODING_EMBSTR_SIZE_LIMIT 44实现（object.h）超过范围则自动转换类型，修改数据会转换成raw类型，大内存编码无法退化为小内存编码。
+embstr以及raw的临界值可通过配置
+
+`OBJ_ENCODING_EMBSTR_SIZE_LIMIT` 44实现（object.h）
+
+- 超过范围则自动转换类型，修改数据会转换成raw类型，大内存编码无法退化为小内存编码。
 
 **应用场景**：
 
 1. 热点内容缓存
 2. 分布式session
-3. 分布式锁：setnx
+3. 分布式锁（setnx）：最好带上失效时间的原子性操作`set key value EX 10 NX`
 4. 全局id：incrby    项目上应用：全局msgId
 5. 原子性操作可应用的场景：限流、计数
+
+**常用操作**：
+
+mset：批量操作
+
+incr、decr：递增、递减
+
+incrbyfload：浮点数增加
+
+strlen：获取长度
+
+append：追加内容
+
+getrange：获取指定范围的字符
 
 ### Hash
 
@@ -59,8 +79,8 @@ value只能是字符串类型
 
 **基本介绍**：
 
-1. 优点：减少内存空间、减少key冲突、批量获取减少IO
-2. 缺点：field无法单独设置过期时间、无bit操作、数据量分布问题（都分布在key所在节点）
+1. **优点**：减少内存空间、减少key冲突、批量获取减少IO
+2. **缺点**：field无法单独设置过期时间、无bit操作、数据量分布问题（都分布在key所在节点）
 3. 基本操作指令：hset、hmset、hscan
 
 <img src="https://gitee.com/lwj156/lwj-study/raw/master/image/redis/image-20200609133918596.png">
@@ -77,7 +97,7 @@ hash的底层由两种结构组成：ziplist和hashtable
 
    通过当前节点的长度和上一个节点的长度计算出上一个节点的地址
 
-   使用场景：hash键值都小于64byte、键值对数量小于512个
+   使用场景：hash键值都小于`64byte`、键值对数量小于`512个`
 
    可通过redis.conf配置转成哈希表的临界值：hash-max-ziplist-value、hash-max-ziplist-entries
 
@@ -129,11 +149,15 @@ hash的底层由两种结构组成：ziplist和hashtable
 1. 由于list是有序排列，因此可以作为时间线
 2. 消息队列：BLPOP/BRPOP指令，阻塞等待，有数据才弹出
 
+基本操作指令：lpush、rpush、lpop、rpop
+
 ### Set
 
 **基本介绍**：无序集合（最大存储40亿数据）
 
 **实现原理**：根据数据类型用不同的数据结构
+
+<img src="redis%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.assets/image-20210318154628942.png" alt="image-20210318154628942" style="zoom: 33%;" />
 
 1. 整数类型：inset存储
 2. 非整数类型：hashtable
@@ -313,3 +337,14 @@ redis的两种持久化方案：RDB（Redis DataBase）快照、AOF（Append Onl
 ## Redis集群
 
 保证redis的性能、扩展以及可用性。
+
+
+
+## 项目中的使用
+
+#### 在线用户数量：
+
+1. setbit onlineUsers （userId）1 设置在线状态
+2. 计算数量bitcount onlineUsers
+3. bitop and：查询交集（还有or、xor异或、not非）：可以查询最近7天在线的用户`BITOP "AND" "day1" "day2" "day3"...`
+
